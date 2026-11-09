@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fuci World Cup Draft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icons/7.5.0/css/flag-icons.min.css">
+<style>
+  :root{--paper:#f4f2ea;--ink:#16150f;--muted:#8c8775;--line:#ddd8c9;--green:#147a4a;--field1:#2f9159;--field2:#2b864f;--field-line:rgba(255,255,255,.55);--gold:#a9810f;--red:#c0392b;--chip:#fbfaf5}
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"Archivo",system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+  .wrap{max-width:860px;margin:0 auto;padding:20px 18px 80px}
+  .mono{font-family:"DM Mono",monospace} h1,h2,h3{font-weight:900;letter-spacing:-.02em;margin:0}
+  .kick{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  header{display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;border-bottom:1.5px solid var(--ink);margin-bottom:22px}
+  .brand{display:flex;align-items:baseline;gap:10px}
+  .brand .f{font-weight:900;font-size:22px;letter-spacing:-.03em}.brand .f b{color:var(--green)}
+  .brand .n{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .count{font-size:12px;color:var(--muted)}.count b{color:var(--ink);font-family:"DM Mono"}
+  .btn{appearance:none;cursor:pointer;font-family:"Archivo";font-weight:800;font-size:14px;border-radius:9px;padding:12px 18px;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);transition:.12s}
+  .btn:hover{transform:translateY(-1px)}.btn:active{transform:translateY(0)}
+  .btn.ghost{background:transparent;color:var(--ink)}.btn.green{background:var(--green);border-color:var(--green);color:#fff}
+  .btn.sm{padding:9px 13px;font-size:13px}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  .row{display:flex;gap:10px;flex-wrap:wrap}.sp{height:16px}
+  .hero h1{font-size:clamp(28px,6.2vw,44px);line-height:.99;margin:10px 0 12px}
+  .hero p{color:#4a4838;max-width:540px;line-height:1.5;margin:0 0 20px}
+  .steps{display:flex;gap:22px;flex-wrap:wrap;margin-top:24px;border-top:1px solid var(--line);padding-top:16px}
+  .steps div{font-size:13px;color:var(--muted)}.steps b{display:block;font-family:"DM Mono";color:var(--green);font-size:15px}
+  label.fld{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:6px}
+  input.inp{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:9px;padding:12px;font-family:"Archivo";font-size:15px;font-weight:600;color:var(--ink)}
+  input.inp:focus{outline:none;border-color:var(--ink)}
+  .seg{display:flex;gap:8px;flex-wrap:wrap}
+  .seg button{flex:1;min-width:84px;background:#fff;border:1.5px solid var(--line);border-radius:9px;padding:11px;font-family:"Archivo";font-weight:800;font-size:14px;cursor:pointer;color:var(--ink)}
+  .seg button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .grid2{display:grid;gap:12px;grid-template-columns:1fr 1fr}.note{font-size:13px;color:var(--muted);line-height:1.5}
+  .dhead{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:10px}
+  .dhead h2{font-size:22px}.dhead .prog{font-family:"DM Mono";font-size:13px;color:var(--muted)}
+
+  /* tactics board */
+  .board{position:relative;width:100%;max-width:430px;margin:0 auto;aspect-ratio:68/100;border-radius:12px;overflow:hidden;
+    background:repeating-linear-gradient(0deg,var(--field1) 0 9%,var(--field2) 9% 18%);border:2px solid #1f6e41}
+  .mk{position:absolute;border:1.5px solid var(--field-line)}
+  .mk.mid{left:0;right:0;top:50%;height:0;border-width:1.5px 0 0 0}
+  .mk.circle{width:26%;aspect-ratio:1;border-radius:50%;left:37%;top:42%}
+  .mk.boxT{left:24%;right:24%;top:0;height:14%;border-top:0}
+  .mk.boxB{left:24%;right:24%;bottom:0;height:14%;border-bottom:0}
+  .tok{position:absolute;transform:translate(-50%,-50%);width:58px;z-index:3;text-align:center}
+  .empty{width:46px;height:46px;border-radius:50%;border:2px dashed rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:12px;color:#fff;background:rgba(0,0,0,.14);cursor:pointer;margin:0 auto;transition:.12s;font-family:"DM Mono"}
+  .empty:hover{background:rgba(0,0,0,.28);transform:scale(1.06)}
+  .tok.sel .empty{border-style:solid;border-color:#ffd34d;background:rgba(255,211,77,.25);box-shadow:0 0 0 4px rgba(255,211,77,.25);animation:pulse 1s infinite}
+  @keyframes pulse{50%{box-shadow:0 0 0 7px rgba(255,211,77,.12)}}
+  .chip{background:#fff;border-radius:9px;padding:4px 3px 5px;box-shadow:0 3px 8px rgba(0,0,0,.25);border:1px solid rgba(0,0,0,.06)}
+  .chip.top{box-shadow:0 3px 10px rgba(169,129,15,.5);border-color:var(--gold)}
+  .chip .r1{display:flex;align-items:center;justify-content:center;gap:4px}
+  .chip .ov{font-family:"DM Mono";font-weight:500;font-size:14px}.chip.top .ov{color:var(--gold)}
+  .chip .nm{font-size:10px;font-weight:800;line-height:1.05;margin-top:1px}
+  .chip .yr{font-size:8px;color:var(--muted);font-family:"DM Mono"}
+  .fi{border-radius:2px;background-size:cover;background-position:center;box-shadow:0 0 0 1px rgba(0,0,0,.08);display:inline-block;vertical-align:middle}
+  .chip .fi{width:16px;height:12px}.cand .fi{width:42px;height:30px;display:block;margin:5px auto 3px}
+  .tflag .fi{width:26px;height:18px}.stars .fi{width:15px;height:11px;margin-right:5px}.posbtn .fi{display:none}
+
+  .draftbar{margin-top:14px;text-align:center}
+  .draftbar .hint{font-size:13px;color:var(--muted);margin-bottom:8px}
+  .dice{display:inline-block}.rolling .dice{animation:spin .45s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+  .cands{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+  .cand{cursor:pointer;border:1.5px solid var(--line);border-radius:11px;background:#fff;padding:12px 8px;text-align:center;transition:.12s}
+  .cand:hover{border-color:var(--green);transform:translateY(-3px)}
+  .cand .ov{font-family:"DM Mono";font-weight:500;font-size:28px;line-height:.9}.cand.top .ov{color:var(--gold)}
+  .cand .nm{font-weight:800;font-size:15px;letter-spacing:-.01em}.cand .mt{font-size:11px;color:var(--muted);font-family:"DM Mono"}
+  .cand .pp{font-size:10px;color:var(--green);font-weight:700;margin-top:3px}
+  .chooser{margin-top:12px;border:1.5px solid var(--green);border-radius:11px;padding:12px;background:var(--chip);text-align:center}
+  .chooser .q{font-weight:800;margin-bottom:8px;font-size:14px}
+  .posbtn{display:inline-block;margin:4px;background:var(--green);color:#fff;border:none;border-radius:8px;padding:9px 14px;font-weight:800;font-family:"Archivo";cursor:pointer;font-size:13px}
+
+  /* tournament */
+  .tcard{border:1.5px solid var(--ink);border-radius:14px;padding:16px;background:#fff;margin-bottom:12px}
+  .matchrow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+  .side{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+  .side .tflag{display:flex;align-items:center;gap:7px;font-weight:800;font-size:14px}.side .tov{font-family:"DM Mono";font-size:11px;color:var(--muted)}
+  .score{font-family:"DM Mono";font-weight:500;font-size:32px;letter-spacing:.04em;text-align:center}.score .pen{display:block;font-size:11px;color:var(--muted)}
+  .stars{font-size:11px;color:var(--muted);margin-top:8px;display:flex;flex-wrap:wrap;gap:3px 12px;justify-content:center}.stars span{display:inline-flex;align-items:center}
+  .events{margin:10px 0 4px;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:6px 0}
+  .evrow{display:flex;align-items:center;gap:8px;font-size:13px;padding:3px 2px}
+  .evrow .min{font-family:"DM Mono";font-size:12px;color:var(--muted);width:30px;text-align:right}
+  .evrow .who{flex:1;font-weight:700}.evrow .es{font-family:"DM Mono";font-size:12px;color:var(--muted)}
+  .evrow.me .who{color:var(--green)}.evrow.opp .who{color:var(--red)}
+  .statline{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 16px;font-size:11.5px;color:var(--muted);margin-top:6px}
+  .statline b{font-family:"DM Mono";color:var(--ink);font-weight:500}
+  .invite{border:1.5px solid var(--green);border-radius:12px;padding:14px;background:var(--chip);margin-top:12px}
+  .invite .ihead{font-weight:900;font-size:15px;margin-bottom:6px}
+  .invtext{width:100%;margin-top:8px;background:#fff;border:1.5px solid var(--line);border-radius:9px;padding:10px;font-family:"DM Mono";font-size:12.5px;color:var(--ink);resize:vertical;line-height:1.5}
+  .rstamp{font-weight:900;font-size:13px;text-align:center;margin-top:8px}.rstamp.w{color:var(--green)}.rstamp.l{color:var(--red)}.rstamp.d{color:var(--muted)}
+  .banner{text-align:center;border:1.5px solid var(--ink);border-radius:14px;padding:20px;margin-bottom:14px;background:var(--chip)}
+  .banner .em{font-size:40px;line-height:1}.banner .big{font-weight:900;font-size:24px;letter-spacing:-.01em;margin-top:6px}
+  .banner.win{border-color:var(--green)}.banner.win .big{color:var(--green)}
+  .banner.out{border-color:var(--red)}.banner.out .big{color:var(--red)}
+  .banner.champ{border-color:var(--gold);background:linear-gradient(180deg,#fff8e6,#fff)}.banner.champ .big{color:var(--gold);font-size:30px}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}.banner.champ .em{animation:bounce 1s infinite}
+  .trophy{display:block;margin:2px auto 8px;filter:drop-shadow(0 7px 16px rgba(169,129,15,.55));animation:bounce 1.7s ease-in-out infinite}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+  th,td{padding:9px 6px;text-align:center;border-bottom:1px solid var(--line)}
+  th{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  td.nm{text-align:left;font-weight:700}td.nm .fi{width:20px;height:14px;margin-right:6px}
+  tr.me td{background:rgba(20,122,74,.08)}tr.adv td:first-child{box-shadow:inset 3px 0 0 var(--green)}
+  .rk{font-family:"DM Mono";font-weight:500}
+  details{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--green)}
+  .fix{font-size:13px;padding:5px 0;display:flex;justify-content:space-between;border-bottom:1px dashed var(--line)}.fix .s{font-family:"DM Mono"}
+  .sechead{font-weight:900;font-size:15px;margin:18px 0 6px}
+  .hidden{display:none!important}.center{text-align:center}
+  .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:9px;font-weight:700;font-size:14px;z-index:60;opacity:0;transition:.25s;pointer-events:none}.toast.show{opacity:1}
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:80;overflow:hidden}
+  .conf{position:absolute;width:9px;height:14px;top:-20px;opacity:.95;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="f">Fuci&nbsp;<b>World&nbsp;Cup</b>&nbsp;Draft</span><span class="n">monte · turnuva</span></div>
+    <div class="count" id="count">—</div>
+  </header>
+
+  <section id="home">
+    <div class="kick">Zar at · pozisyon seç · dünya kupasını kazan</div>
+    <div class="hero">
+      <h1>Kadronu kur,<br>Dünya Kupası'na koş.</h1>
+      <p>Sahada istediğin mevkiye dokun, zar dönsün; o mevkide oynamış 3 oyuncudan birini al. Çok mevkili oyuncuyu istediğin boş pozisyona koy. 11'i tamamla; gerçek tarihî milli takımlara karşı grup maçlarını tek tek oyna, sonra son 16 → çeyrek → yarı → final.</p>
+      <div class="row">
+        <button class="btn" onclick="goSetup('solo')">Dünya Kupası (Tek)</button>
+        <button class="btn green" onclick="goSetup('league')">Fuci Arkadaşlar Ligi</button>
+      </div>
+      <div class="steps"><div><b>01</b>Mevkiye dokun, zar at</div><div><b>02</b>3 oyuncudan birini seç</div><div><b>03</b>Maçları tek tek oyna</div></div>
+    </div>
+  </section>
+
+  <section id="setup" class="hidden">
+    <h2 id="setupTitle" style="font-size:24px;margin-bottom:16px">Kadronu kur</h2>
+    <label class="fld">Takım adı</label>
+    <input id="teamName" class="inp" placeholder="örn. Galaktik Kartallar" maxlength="22">
+    <div class="sp"></div>
+    <div id="leagueFields" class="hidden">
+      <label class="fld">Lig kodu</label>
+      <input id="leagueCode" class="inp" placeholder="KANKALAR" maxlength="18">
+      <div class="sp"></div>
+      <p class="note">Aynı kodu giren herkes aynı tabloda yarışır. Takımlar takım adıyla ayrışır. Lig verisi bu uygulamayı açan herkesçe görülebilir (paylaşımlı). Arkadaşlarınla oynamak için uygulamayı paylaş, aynı kodu kullanın.</p>
+      <div class="sp"></div>
+    </div>
+    <label class="fld">Diziliş</label>
+    <div class="seg" id="formSeg"></div>
+    <div class="sp"></div>
+    <label class="fld" id="diffLbl">Turnuva zorluğu</label>
+    <div class="seg" id="diffSeg">
+      <button data-d="-4" class="on">Kolay</button><button data-d="0">Normal</button><button data-d="4">Zor</button>
+    </div>
+    <div class="sp"></div>
+    <div class="row">
+      <button class="btn" onclick="startDraft()">Drafte Başla →</button>
+      <button class="btn ghost" onclick="show('home')">Geri</button>
+      <button id="viewLeagueBtn" class="btn ghost hidden" onclick="openLeague()">Ligi Gör</button>
+    </div>
+  </section>
+
+  <section id="draft" class="hidden">
+    <div class="dhead"><h2 id="draftHead">Kadronu kur</h2><span class="prog" id="progress">0 / 11</span></div>
+    <div class="board" id="board"></div>
+    <div class="draftbar">
+      <div class="hint" id="draftHint">Sahada boş bir mevkiye dokun — zar dönsün.</div>
+      <button class="btn ghost sm hidden" id="rerollBtn" onclick="rerollSlot()">↻ Yeniden zar (<span id="rrLeft">3</span>)</button>
+      <div class="cands hidden" id="cands"></div>
+      <div class="chooser hidden" id="chooser"></div>
+    </div>
+  </section>
+
+  <section id="wc" class="hidden">
+    <div class="dhead"><h2>Dünya Kupası</h2><span class="prog" id="wcTeam">—</span></div>
+    <div id="wcBody"></div>
+    <div class="sp"></div>
+    <div class="row center" style="justify-content:center" id="wcBtns"></div>
+  </section>
+
+  <section id="result" class="hidden">
+    <div class="dhead"><h2 id="resultTitle">Kadron hazır</h2><span class="prog" id="myOv2">—</span></div>
+    <div class="board" id="board2"></div>
+    <div class="sp"></div>
+    <div class="row center" style="justify-content:center">
+      <button class="btn green sm" onclick="submitToLeague()">★ Lige Kaydet</button>
+      <button class="btn ghost sm" onclick="openLeague()">Puan Tablosu</button>
+      <button class="btn sm" onclick="show('home')">Yeni Draft</button>
+    </div>
+  </section>
+
+  <section id="league" class="hidden">
+    <div class="dhead"><h2 id="leagueTitle">Fuci Arkadaşlar Ligi</h2><span class="prog" id="leagueMeta">—</span></div>
+    <div id="standings"></div>
+    <div id="inviteBox" class="hidden"></div>
+    <div id="fixturesWrap"></div>
+    <p class="note" id="leagueNote" style="margin-top:12px"></p>
+    <div class="sp"></div>
+    <div class="row">
+      <button class="btn sm" onclick="refreshLeague()">↻ Yenile</button>
+      <button class="btn green sm" onclick="inviteFriends()">↗ Arkadaşını Davet Et</button>
+      <button class="btn sm" onclick="goSetup('league')">+ Kadro Gönder</button>
+      <button class="btn ghost sm" onclick="show('home')">Ana Menü</button>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+<div id="confetti"></div>
+
+<script>
+/* ===== flags ===== */
+const ISO={BRA:"br",ARG:"ar",GER:"de",ITA:"it",FRA:"fr",ESP:"es",NED:"nl",ENG:"gb-eng",POR:"pt",URU:"uy",CRO:"hr",
+BEL:"be",CZE:"cz",DEN:"dk",COL:"co",CMR:"cm",CIV:"ci",ALG:"dz",ECU:"ec",CHI:"cl",NGA:"ng",GHA:"gh",KOR:"kr",JPN:"jp",
+USA:"us",SWE:"se",RUS:"ru",POL:"pl",ROU:"ro",SUI:"ch",SEN:"sn",MAR:"ma",SRB:"rs",PER:"pe",EGY:"eg",UKR:"ua",BUL:"bg",
+MEX:"mx",HUN:"hu",AUT:"at",IRL:"ie",GRE:"gr",TUR:"tr",KSA:"sa",IRN:"ir",TUN:"tn",NOR:"no",AUS:"au",PRY:"py",CRC:"cr",
+SCO:"gb-sct",WAL:"gb-wls",SVK:"sk",SVN:"si",CAN:"ca",PAN:"pa",QAT:"qa",NIR:"gb-nir",AVUSTRALYA:"au"};
+const flag=c=>c&&ISO[c]?`<span class="fi fi-${ISO[c]}"></span>`:`<span class="fi" style="background:#ccc"></span>`;
+
+/* ===== players ===== */
+const P=(n,c,y,o,p)=>({n,c,y,o,pos:p.split(" ")});
+const ROSTER=[
+ /* GK */
+ P("Yashin","RUS",1966,90,"GK"),P("Banks","ENG",1970,87,"GK"),P("Zoff","ITA",1982,88,"GK"),P("Shilton","ENG",1986,84,"GK"),
+ P("Dasaev","RUS",1986,83,"GK"),P("Goycochea","ARG",1990,82,"GK"),P("Higuita","COL",1990,79,"GK"),P("Taffarel","BRA",1994,83,"GK"),
+ P("Preud'homme","BEL",1994,82,"GK"),P("Chilavert","PRY",1998,82,"GK"),P("Barthez","FRA",1998,85,"GK"),P("Schmeichel","DEN",1998,87,"GK"),
+ P("Van der Sar","NED",1998,85,"GK"),P("Seaman","ENG",1998,82,"GK"),P("Kahn","GER",2002,90,"GK"),P("Buffon","ITA",2006,91,"GK"),
+ P("Čech","CZE",2006,86,"GK"),P("Casillas","ESP",2010,90,"GK"),P("Neuer","GER",2014,92,"GK"),P("Ochoa","MEX",2014,82,"GK"),
+ P("Navas","CRC",2014,80,"GK"),P("De Gea","ESP",2014,84,"GK"),P("Lloris","FRA",2018,86,"GK"),P("Courtois","BEL",2018,89,"GK"),
+ P("Subašić","CRO",2018,81,"GK"),P("E. Martínez","ARG",2022,87,"GK"),P("Bounou","MAR",2022,84,"GK"),P("Onana","CMR",2022,82,"GK"),
+ /* RB */
+ P("C. Alberto","BRA",1970,88,"RB"),P("Vogts","GER",1974,83,"RB"),P("Gentile","ITA",1982,83,"RB CB"),P("Cafu","BRA",1994,88,"RB RM"),
+ P("Bergomi","ITA",1982,81,"RB CB"),P("Zanetti","ARG",1998,85,"RB RM"),P("Maicon","BRA",2010,84,"RB"),P("Lahm","GER",2010,88,"RB LB CM"),
+ P("Alves","BRA",2014,85,"RB RM"),P("Lichtsteiner","SUI",2014,78,"RB"),P("Walker","ENG",2018,84,"RB CB"),P("Hakimi","MAR",2022,84,"RB RM"),
+ /* CB */
+ P("Beckenbauer","GER",1974,92,"CB CDM"),P("Moore","ENG",1970,88,"CB"),P("Facchetti","ITA",1970,84,"CB LB"),P("Krol","NED",1974,84,"CB LB"),
+ P("Passarella","ARG",1978,84,"CB"),P("Scirea","ITA",1982,84,"CB"),P("Koeman","NED",1990,84,"CB CDM"),P("Baresi","ITA",1994,90,"CB"),
+ P("Aldair","BRA",1994,84,"CB"),P("Desailly","FRA",1998,86,"CB CDM"),P("Blanc","FRA",1998,85,"CB"),P("Stam","NED",1998,86,"CB"),
+ P("Hierro","ESP",1998,84,"CB CDM"),P("Thuram","FRA",1998,86,"CB RB"),P("Ayala","ARG",2002,84,"CB"),P("Lúcio","BRA",2002,85,"CB"),
+ P("Nesta","ITA",2006,87,"CB"),P("Cannavaro","ITA",2006,91,"CB"),P("Ferdinand","ENG",2006,85,"CB"),P("Terry","ENG",2006,85,"CB"),
+ P("Samuel","ARG",2006,84,"CB"),P("I. Hurtado","ECU",2006,75,"CB"),P("Kolo Touré","CIV",2006,77,"CB RB"),P("Puyol","ESP",2010,88,"CB"),
+ P("Piqué","ESP",2010,87,"CB"),P("Ramos","ESP",2010,89,"CB RB"),P("Hummels","GER",2014,87,"CB"),P("Boateng","GER",2014,86,"CB"),
+ P("Godín","URU",2014,86,"CB"),P("Chiellini","ITA",2014,86,"CB"),P("Bonucci","ITA",2014,85,"CB"),P("Varane","FRA",2018,86,"CB"),
+ P("Koulibaly","SEN",2018,84,"CB"),P("Van Dijk","NED",2022,90,"CB"),P("Marquinhos","BRA",2022,86,"CB"),P("Otamendi","ARG",2022,83,"CB"),
+ P("Kim Min-jae","KOR",2022,83,"CB"),
+ /* LB */
+ P("Junior","BRA",1982,83,"LB LM"),P("Breitner","GER",1974,84,"LB CM"),P("Brehme","GER",1990,84,"LB LM"),P("Maldini","ITA",1994,90,"LB CB"),
+ P("R. Carlos","BRA",1998,89,"LB"),P("A. Cole","ENG",2006,82,"LB"),P("Evra","FRA",2006,82,"LB"),P("Heinze","ARG",2006,80,"LB CB"),
+ P("Marcelo","BRA",2014,83,"LB"),P("Mena","CHI",2014,77,"LB LM"),P("A. Davies","CAN",2022,83,"LB LW"),P("T. Hernández","FRA",2022,84,"LB"),
+ /* CDM */
+ P("Dunga","BRA",1994,82,"CDM"),P("Rijkaard","NED",1990,86,"CDM CM"),P("Deschamps","FRA",1998,80,"CDM CM"),P("Davids","NED",1998,84,"CDM CM"),
+ P("Vieira","FRA",1998,87,"CDM CM"),P("Makélélé","FRA",2006,84,"CDM"),P("Gattuso","ITA",2006,83,"CDM CM"),P("Mascherano","ARG",2010,85,"CDM CB"),
+ P("Busquets","ESP",2010,88,"CDM CM"),P("Casemiro","BRA",2018,86,"CDM"),P("Kanté","FRA",2018,86,"CDM CM"),P("De Jong","NED",2022,85,"CDM CM"),
+ /* CM */
+ P("Didi","BRA",1958,86,"CM CAM"),P("Overath","GER",1970,84,"CM"),P("Netzer","GER",1974,84,"CM CAM"),P("Neeskens","NED",1974,84,"CM CAM"),
+ P("Gérson","BRA",1970,87,"CM CDM"),P("B. Charlton","ENG",1970,87,"CM CAM"),P("Falcão","BRA",1982,86,"CM"),P("Matthäus","GER",1990,90,"CM CDM CAM"),
+ P("Gullit","NED",1990,88,"CM CAM"),P("Valderrama","COL",1994,82,"CM CAM"),P("Hagi","ROU",1994,85,"CM CAM"),P("Redondo","ARG",1998,84,"CM CDM"),
+ P("Boban","CRO",1998,83,"CM CAM"),P("Veron","ARG",2002,84,"CM CAM"),P("Ballack","GER",2002,85,"CM CAM"),P("Scholes","ENG",2002,85,"CM CAM"),
+ P("Nakata","JPN",2002,79,"CM CAM"),P("Park Ji-sung","KOR",2002,78,"CM RM"),P("Xavi","ESP",2010,90,"CM CDM"),P("Alonso","ESP",2010,86,"CM CDM"),
+ P("Gerrard","ENG",2010,85,"CM CAM"),P("Lampard","ENG",2010,84,"CM CAM"),P("Iniesta","ESP",2010,90,"CM CAM LW"),P("Schweinsteiger","GER",2014,87,"CM CDM"),
+ P("Kroos","GER",2014,89,"CM CDM"),P("Vidal","CHI",2014,85,"CM CDM"),P("Modrić","CRO",2018,90,"CM CAM"),P("Pogba","FRA",2018,84,"CM CAM"),
+ P("De Bruyne","BEL",2018,90,"CM CAM RW"),P("Eriksen","DEN",2018,85,"CM CAM"),P("Enzo Fernández","ARG",2022,83,"CM"),P("Mac Allister","ARG",2022,83,"CM CAM"),
+ P("Bellingham","ENG",2022,84,"CM CAM"),P("Bruno Fernandes","POR",2022,86,"CM CAM"),
+ /* CAM */
+ P("Meazza","ITA",1938,88,"CAM CF"),P("Schiaffino","URU",1950,86,"CAM CF"),P("Hidegkuti","HUN",1954,84,"CAM CF"),P("Kopa","FRA",1958,86,"CAM RW"),
+ P("Rivera","ITA",1970,85,"CAM"),P("Pelé","BRA",1970,96,"CAM CF ST"),P("Cruyff","NED",1974,93,"CAM CF LW"),P("Zico","BRA",1982,90,"CAM CF"),
+ P("Sócrates","BRA",1982,87,"CAM CM"),P("Platini","FRA",1986,90,"CAM CM"),P("Maradona","ARG",1986,95,"CAM CF"),P("Stojković","SRB",1990,83,"CAM"),
+ P("R. Baggio","ITA",1994,90,"CAM CF"),P("Prosinečki","CRO",1998,83,"CAM CM"),P("Bergkamp","NED",1998,88,"CAM CF"),P("Zidane","FRA",1998,93,"CAM CM"),
+ P("Okocha","NGA",1998,84,"CAM RW"),P("Rui Costa","POR",2002,83,"CAM"),P("Rivaldo","BRA",2002,90,"CAM LW"),P("Kaká","BRA",2006,88,"CAM"),
+ P("Riquelme","ARG",2006,84,"CAM"),P("Totti","ITA",2006,86,"CAM CF ST"),P("Deco","POR",2006,84,"CAM CM"),P("Sneijder","NED",2010,86,"CAM CM"),
+ P("Özil","GER",2014,86,"CAM"),P("J. Rodríguez","COL",2014,85,"CAM"),P("Griezmann","FRA",2018,88,"CAM CF"),
+ /* RW / RM */
+ P("Garrincha","BRA",1962,92,"RW RM"),P("Jairzinho","BRA",1970,86,"RW RM"),P("Donadoni","ITA",1990,80,"RM RW"),P("Figo","POR",2006,86,"RW RM"),
+ P("Rummenigge","GER",1982,88,"RW ST"),P("Bebeto","BRA",1994,84,"RW ST"),P("Robben","NED",2014,88,"RW LW"),P("T. Müller","GER",2014,85,"RW RM ST"),
+ P("A. Sánchez","CHI",2014,85,"RW LW ST"),P("Salah","EGY",2018,86,"RW LW ST"),P("Messi","ARG",2022,96,"RW CAM CF"),
+ /* LW / LM */
+ P("Rivellino","BRA",1970,86,"LW CAM LM"),P("Rep","NED",1974,82,"LW RW ST"),P("Overmars","NED",1998,83,"LW LM"),P("Ronaldinho","BRA",2002,91,"LW CAM"),
+ P("Cubillas","PER",1978,83,"LW CAM ST"),P("Stoichkov","BUL",1994,86,"LW ST"),P("Neymar","BRA",2014,88,"LW CAM ST"),P("Hazard","BEL",2018,88,"LW CAM"),
+ P("Vinícius","BRA",2022,86,"LW"),P("Mbappé","FRA",2022,92,"LW ST RW"),P("C. Ronaldo","POR",2018,91,"LW RW ST"),
+ /* ST / CF */
+ P("Leônidas","BRA",1938,85,"ST CF"),P("Piola","ITA",1938,85,"ST"),P("Sindelar","AUT",1934,85,"CF"),P("Ghiggia","URU",1950,81,"RW ST"),
+ P("Puskás","HUN",1954,92,"ST CF"),P("Kocsis","HUN",1954,87,"ST"),P("Fontaine","FRA",1958,88,"ST"),P("Vavá","BRA",1958,83,"ST"),
+ P("Eusébio","POR",1966,90,"ST CF"),P("G. Müller","GER",1974,90,"ST"),P("Kempes","ARG",1978,86,"ST CF"),P("Rossi","ITA",1982,86,"ST"),
+ P("Careca","BRA",1986,85,"ST"),P("Lineker","ENG",1986,85,"ST"),P("Klinsmann","GER",1990,86,"ST"),P("Milla","CMR",1990,79,"ST"),
+ P("Romário","BRA",1994,92,"ST CF"),P("Salenko","RUS",1994,78,"ST"),P("Šuker","CRO",1998,85,"ST"),P("Batistuta","ARG",1998,88,"ST"),
+ P("Raúl","ESP",2002,86,"ST CF"),P("Vieri","ITA",2002,85,"ST"),P("Ronaldo","BRA",2002,94,"ST CF"),P("Trezeguet","FRA",2002,84,"ST"),
+ P("Eto'o","CMR",2002,86,"ST"),P("Henry","FRA",2006,88,"ST LW"),P("Drogba","CIV",2006,85,"ST"),P("Shevchenko","UKR",2006,85,"ST"),
+ P("Podolski","GER",2006,82,"ST LW"),P("Villa","ESP",2010,87,"ST CF"),P("Torres","ESP",2010,85,"ST"),P("Forlán","URU",2010,86,"ST CF"),
+ P("Suárez","URU",2010,85,"ST CF"),P("Tévez","ARG",2010,84,"ST"),P("Gyan","GHA",2010,80,"ST"),P("Klose","GER",2014,85,"ST"),
+ P("Van Persie","NED",2014,86,"ST"),P("Agüero","ARG",2014,86,"ST"),P("Higuaín","ARG",2014,84,"ST"),P("Cavani","URU",2018,85,"ST"),
+ P("Kane","ENG",2018,87,"ST"),P("Lukaku","BEL",2018,85,"ST"),P("Lewandowski","POL",2022,88,"ST"),P("Giroud","FRA",2022,83,"ST"),
+ P("J. Álvarez","ARG",2022,84,"ST"),P("Richarlison","BRA",2022,83,"ST"),
+ /* ===== EK PARTİ 1: Türkiye 2002 (tam kadro) ===== */
+ P("Rüştü","TUR",2002,83,"GK"),P("Alpay","TUR",2002,79,"CB"),P("Bülent K.","TUR",2002,77,"CB RB"),P("Fatih Akyel","TUR",2002,76,"RB"),
+ P("Ümit Davala","TUR",2002,78,"RM RB"),P("Tugay","TUR",2002,80,"CM CDM"),P("Emre B.","TUR",2002,82,"CM CAM"),P("Okan Buruk","TUR",2002,79,"RM CM"),
+ P("Y. Baştürk","TUR",2002,80,"CM CAM"),P("Hasan Şaş","TUR",2002,79,"LW LM"),P("Hakan Şükür","TUR",2002,84,"ST CF"),P("İlhan Mansız","TUR",2002,80,"ST CF"),
+ P("Nihat K.","TUR",2002,79,"ST CF"),
+ /* ===== EK PARTİ 2: 2018 / 2022 yıldızları ===== */
+ P("Alisson","BRA",2022,88,"GK"),P("Pavard","FRA",2018,80,"RB CB"),P("Umtiti","FRA",2018,82,"CB"),P("Upamecano","FRA",2022,82,"CB"),
+ P("Tchouaméni","FRA",2022,84,"CDM CM"),P("Di María","ARG",2022,86,"RW LW CAM"),P("Tagliafico","ARG",2022,80,"LB"),P("Raphinha","BRA",2022,83,"RW"),
+ P("Antony","BRA",2022,80,"RW"),P("Gakpo","NED",2022,82,"LW ST"),P("Depay","NED",2022,83,"ST CF"),P("Gvardiol","CRO",2022,82,"CB LB"),
+ P("Brozović","CRO",2022,82,"CDM CM"),P("Perišić","CRO",2018,83,"LW LM"),P("Rakitić","CRO",2018,84,"CM CAM"),P("Mandžukić","CRO",2018,83,"ST"),
+ P("B. Silva","POR",2022,86,"CM RW CAM"),P("João Félix","POR",2022,82,"CF CAM"),P("Sterling","ENG",2018,83,"RW LW"),P("Foden","ENG",2022,84,"CAM RW"),
+ P("Saka","ENG",2022,84,"RW LW"),P("Rice","ENG",2022,84,"CDM CM"),P("Ziyech","MAR",2022,82,"RW CAM"),P("Amrabat","MAR",2022,82,"CDM CM"),
+ P("En-Nesyri","MAR",2022,80,"ST"),
+ /* ===== EK PARTİ 3: Bölgesel temsil (Afrika · Asya · Amerika · eski Avrupa) ===== */
+ P("Hugo Sánchez","MEX",1986,84,"ST"),P("Blanco","MEX",1998,80,"CAM CF"),P("Márquez","MEX",2006,81,"CB CDM"),P("Chicharito","MEX",2010,81,"ST"),
+ P("Donovan","USA",2002,80,"CAM RW"),P("Dempsey","USA",2014,79,"ST CAM"),P("Pulisic","USA",2022,81,"RW LW"),P("Valdano","ARG",1986,82,"ST"),
+ P("Burruchaga","ARG",1986,80,"CAM CM"),P("Kluivert","NED",1998,85,"ST CF"),P("Pirlo","ITA",2006,88,"CM CDM"),P("Nedvěd","CZE",2006,86,"CM CAM LM"),
+ P("M. Laudrup","DEN",1998,86,"CAM CM"),P("Mané","SEN",2022,86,"LW ST"),P("Diouf","SEN",2002,80,"ST RW"),P("Y. Touré","CIV",2010,85,"CM CDM"),
+ P("Kanu","NGA",1998,82,"ST CF"),P("Essien","GHA",2010,83,"CM CDM"),P("Mahrez","ALG",2014,82,"RW LW"),P("Daei","IRN",1998,79,"ST"),
+ P("Azmoun","IRN",2018,80,"ST"),P("Son","KOR",2018,86,"LW ST"),P("Cha Bum-kun","KOR",1986,80,"ST"),P("Nakamura","JPN",2010,80,"CAM LM"),
+ P("Honda","JPN",2014,80,"CAM RW"),P("Mitoma","JPN",2022,81,"LW"),P("Cahill","AUS",2014,79,"ST CAM"),P("Kewell","AUS",2006,80,"LW"),
+ P("Al-Owairan","KSA",1994,78,"CM RW"),P("Cuadrado","COL",2014,80,"RM RW"),P("Asprilla","COL",1994,81,"ST CF"),P("Ibrahimović","SWE",2006,87,"ST CF"),
+ /* ===== EK PARTİ 4: 2002'den beri yarı finale kalan takımların kadro derinliği ===== */
+ /* GK */
+ P("Lehmann","GER",2006,83,"GK"),P("Júlio César","BRA",2014,84,"GK"),P("Cillessen","NED",2014,81,"GK"),P("Muslera","URU",2010,81,"GK"),
+ P("Pickford","ENG",2018,81,"GK"),P("Livaković","CRO",2022,80,"GK"),P("Lee Woon-jae","KOR",2002,78,"GK"),
+ /* DEF */
+ P("Mertesacker","GER",2006,81,"CB"),P("Thiago Silva","BRA",2014,87,"CB"),P("David Luiz","BRA",2014,84,"CB CDM"),P("De Vrij","NED",2014,81,"CB"),
+ P("Lugano","URU",2010,80,"CB"),P("R. Carvalho","POR",2006,84,"CB"),P("Alderweireld","BEL",2018,84,"CB"),P("Vertonghen","BEL",2018,83,"CB LB"),
+ P("Maguire","ENG",2018,81,"CB"),P("Materazzi","ITA",2006,82,"CB"),P("Hong Myung-bo","KOR",2002,80,"CB CDM"),P("Romero","ARG",2022,82,"CB"),
+ P("Blind","NED",2014,80,"LB CB"),P("Lee Young-pyo","KOR",2002,77,"LB LM"),P("Trippier","ENG",2018,80,"RB"),P("Molina","ARG",2022,80,"RB"),
+ /* MID */
+ P("Frings","GER",2006,81,"CM CDM"),P("Khedira","GER",2010,82,"CM CDM"),P("Wijnaldum","NED",2014,82,"CM CAM"),P("Witsel","BEL",2018,83,"CDM CM"),
+ P("Maniche","POR",2006,81,"CM CDM"),P("Kovačić","CRO",2022,82,"CM CDM"),P("Henderson","ENG",2018,80,"CM CDM"),P("Fernandinho","BRA",2014,83,"CDM CM"),
+ P("Oscar","BRA",2014,82,"CAM CM"),
+ /* ATT */
+ P("Hulk","BRA",2014,82,"RW ST"),P("Ribéry","FRA",2006,81,"LW RW"),P("Del Piero","ITA",2006,85,"CF ST"),P("Toni","ITA",2006,83,"ST"),
+ P("Pauleta","POR",2006,82,"ST CF"),P("Ahn Jung-hwan","KOR",2002,79,"ST CF"),
+ /* ===== EK PARTİ 5: eksik ikonik yıldızlar (draftlanabilir) ===== */
+ P("Petit","FRA",1998,84,"CDM CM"),P("Gascoigne","ENG",1990,84,"CAM CM"),P("Riva","ITA",1970,85,"ST LW"),P("Larsson","SWE",2002,83,"ST CF"),
+ P("Brolin","SWE",1994,82,"CAM RW"),P("Popescu","ROU",1994,82,"CB CDM"),P("Bale","WAL",2022,85,"RW LW ST"),P("Ramsey","WAL",2022,82,"CM CAM"),
+ P("Shaqiri","SUI",2018,81,"RW CAM"),P("Xhaka","SUI",2018,81,"CM CDM"),P("Savićević","SRB",1998,84,"CAM CF"),P("Madjer","ALG",1982,80,"ST CF")
+];
+ROSTER.forEach((p,i)=>p.id=i);
+const TOTAL=ROSTER.length, NATIONS=new Set(ROSTER.map(p=>p.c)).size;
+
+/* ===== historical national teams ===== */
+const T=(name,c,y,ovr,stars)=>({name,c,y,ovr,stars});
+const TEAMS=[
+ T("Brezilya","BRA",1970,95,["Pelé","Jairzinho","Rivellino"]),T("Brezilya","BRA",2002,92,["Ronaldo","Rivaldo","Ronaldinho"]),
+ T("Brezilya","BRA",1994,88,["Romário","Bebeto","Dunga"]),T("Brezilya","BRA",1958,89,["Pelé","Garrincha","Didi"]),
+ T("Brezilya","BRA",1982,87,["Zico","Sócrates","Falcão"]),T("Brezilya","BRA",2022,87,["Neymar","Vinícius","Casemiro"]),
+ T("Almanya","GER",2014,92,["Neuer","Kroos","T. Müller"]),T("B. Almanya","GER",1974,90,["Beckenbauer","G. Müller","Breitner"]),
+ T("B. Almanya","GER",1990,88,["Matthäus","Klinsmann","Brehme"]),T("Almanya","GER",2002,84,["Kahn","Ballack"]),
+ T("Arjantin","ARG",1986,91,["Maradona","Valdano","Burruchaga"]),T("Arjantin","ARG",2022,91,["Messi","J. Álvarez","E. Martínez"]),
+ T("Arjantin","ARG",1978,85,["Kempes","Passarella","Fillol"]),T("Arjantin","ARG",2014,86,["Messi","Agüero","Mascherano"]),
+ T("İtalya","ITA",2006,90,["Cannavaro","Pirlo","Totti"]),T("İtalya","ITA",1982,88,["Rossi","Zoff","Scirea"]),
+ T("İtalya","ITA",1970,86,["Rivera","Riva","Facchetti"]),T("İtalya","ITA",1994,86,["R. Baggio","Baresi","Maldini"]),
+ T("Fransa","FRA",1998,90,["Zidane","Thuram","Henry"]),T("Fransa","FRA",2018,91,["Mbappé","Griezmann","Pogba"]),
+ T("Fransa","FRA",2022,90,["Mbappé","Griezmann","Giroud"]),T("Fransa","FRA",1958,84,["Fontaine","Kopa"]),
+ T("Hollanda","NED",1974,89,["Cruyff","Neeskens","Rep"]),T("Hollanda","NED",2010,86,["Robben","Sneijder","Van Persie"]),
+ T("Hollanda","NED",1998,86,["Bergkamp","Davids","Kluivert"]),T("İspanya","ESP",2010,91,["Iniesta","Xavi","Casillas"]),
+ T("İspanya","ESP",2002,84,["Raúl","Hierro","Casillas"]),T("İngiltere","ENG",1966,87,["B. Charlton","Moore","Banks"]),
+ T("İngiltere","ENG",2018,84,["Kane","Sterling","Pickford"]),T("İngiltere","ENG",1990,83,["Lineker","Gascoigne","Shilton"]),
+ T("Portekiz","POR",1966,86,["Eusébio"]),T("Portekiz","POR",2006,84,["Figo","C. Ronaldo","Deco"]),
+ T("Portekiz","POR",2022,85,["C. Ronaldo","B. Fernandes"]),T("Macaristan","HUN",1954,90,["Puskás","Kocsis","Hidegkuti"]),
+ T("Uruguay","URU",1950,85,["Schiaffino","Ghiggia"]),T("Uruguay","URU",2010,84,["Forlán","Suárez","Cavani"]),
+ T("Hırvatistan","CRO",2018,84,["Modrić","Rakitić","Mandžukić"]),T("Hırvatistan","CRO",1998,83,["Šuker","Boban","Prosinečki"]),
+ T("Belçika","BEL",2018,86,["De Bruyne","Hazard","Lukaku"]),T("Belçika","BEL",1986,79,["Ceulemans","Pfaff"]),
+ T("Kolombiya","COL",1994,82,["Valderrama","Asprilla","Higuita"]),T("Kolombiya","COL",2014,83,["J. Rodríguez","Cuadrado"]),
+ T("Şili","CHI",2014,82,["A. Sánchez","Vidal","Bravo"]),T("Meksika","MEX",1986,80,["Negrete","H. Sánchez"]),
+ T("İsveç","SWE",1994,82,["Brolin","Dahlin","Ravelli"]),T("Bulgaristan","BUL",1994,82,["Stoichkov","Letchkov"]),
+ T("Romanya","ROU",1994,82,["Hagi","Popescu"]),T("Fas","MAR",2022,83,["Hakimi","Ziyech","Bounou"]),
+ T("Fas","MAR",1986,77,["Timoumi","Bouderbala"]),T("Çekya","CZE",2006,81,["Čech","Nedvěd","Rosický"]),
+ T("Danimarka","DEN",1998,81,["Schmeichel","M. Laudrup"]),T("Gana","GHA",2010,79,["Gyan","Essien","Muntari"]),
+ T("Nijerya","NGA",1994,80,["Okocha","Amokachi","Yekini"]),T("Senegal","SEN",2002,79,["Diouf","Camara"]),
+ T("Kamerun","CMR",1990,78,["Milla","Omam-Biyik"]),T("Fildişi S.","CIV",2006,80,["Drogba","Kolo Touré"]),
+ T("Cezayir","ALG",2014,79,["Mahrez","Feghouli"]),T("G. Kore","KOR",2002,78,["Park Ji-sung","Ahn"]),
+ T("Japonya","JPN",2018,79,["Kagawa","Honda"]),T("Sovyetler","RUS",1966,84,["Yashin","Voronin"]),
+ T("Rusya","RUS",2018,80,["Akinfeev","Golovin"]),T("Sırbistan","SRB",1990,82,["Stojković","Savićević"]),
+ T("Polonya","POL",1974,82,["Lato","Deyna"]),T("Avusturya","AUT",1954,80,["Ocwirk"]),
+ T("Paraguay","PRY",1998,79,["Chilavert","Cardozo"]),T("Kosta Rika","CRC",2014,79,["Navas","Ruiz"]),
+ T("ABD","USA",1994,75,["Lalas","Wynalda"]),T("İsviçre","SUI",2018,80,["Shaqiri","Xhaka"]),
+ T("Avustralya","AUS",2006,77,["Cahill","Kewell"]),T("Türkiye","TUR",2002,82,["Hakan Şükür","Emre B.","Rüştü"]),
+ T("Hollanda","NED",2022,86,["Van Dijk","De Jong","Gakpo"]),T("Portekiz","POR",2018,84,["C. Ronaldo","B. Silva","João Félix"]),
+ T("Fransa","FRA",2006,89,["Zidane","Henry","Vieira"]),T("Nijerya","NGA",1998,81,["Kanu","Okocha","Finidi"]),
+ T("Senegal","SEN",2022,82,["Mané","Koulibaly","Mendy"]),T("Meksika","MEX",1994,80,["Hugo Sánchez","Campos"]),
+ T("ABD","USA",2002,79,["Donovan","Reyna","Friedel"]),T("İran","IRN",2018,79,["Azmoun","Beiranvand"]),
+ T("S. Arabistan","KSA",1994,78,["Al-Owairan","Al-Jaber"]),T("Japonya","JPN",2022,80,["Mitoma","Kamada","Gonda"]),
+ T("Galler","WAL",2022,79,["Bale","Ramsey"]),T("Polonya","POL",2018,80,["Lewandowski","Szczęsny"]),
+ T("Cezayir","ALG",1982,79,["Madjer","Belloumi"]),T("Gana","GHA",2014,80,["Gyan","A. Ayew","Boateng"]),
+ T("İsveç","SWE",2006,81,["Ibrahimović","Larsson"]),T("Hırvatistan","CRO",2022,85,["Modrić","Gvardiol","Perišić"]),
+ T("İngiltere","ENG",2022,85,["Kane","Foden","Saka"]),T("Arjantin","ARG",1990,84,["Maradona","Goycochea"]),
+ T("Almanya","GER",2006,86,["Ballack","Klose","Lehmann"]),T("Almanya","GER",2010,87,["Schweinsteiger","Özil","Klose"]),
+ T("Hollanda","NED",2014,85,["Robben","Van Persie","Sneijder"]),T("Brezilya","BRA",2014,85,["Neymar","Thiago Silva","Oscar"])
+];
+const teamLabel=t=>`${t.name} ${t.y}`;
+
+/* ===== positions + formations (with board coords) ===== */
+const PM={
+ GK:{lbl:"Kaleci",ab:"GK"},RB:{lbl:"Sağ Bek",ab:"DR"},CB:{lbl:"Stoper",ab:"DC"},LB:{lbl:"Sol Bek",ab:"DL"},
+ CDM:{lbl:"Ön Libero",ab:"DM"},RM:{lbl:"Sağ Orta",ab:"MR"},CM:{lbl:"Orta Saha",ab:"MC"},LM:{lbl:"Sol Orta",ab:"ML"},
+ CAM:{lbl:"10 Numara",ab:"AMC"},RW:{lbl:"Sağ Kanat",ab:"AMR"},LW:{lbl:"Sol Kanat",ab:"AML"},ST:{lbl:"Santrafor",ab:"ST"},CF:{lbl:"Forvet",ab:"F"}
+};
+const S=(pos,x,y)=>({pos,x,y});
+const FORMS={
+ "4-3-3":[S("GK",50,8),S("RB",85,27),S("CB",63,21),S("CB",37,21),S("LB",15,27),S("CDM",50,42),S("CM",72,50),S("CM",28,50),S("RW",82,74),S("ST",50,82),S("LW",18,74)],
+ "4-4-2":[S("GK",50,8),S("RB",85,27),S("CB",63,21),S("CB",37,21),S("LB",15,27),S("RM",85,53),S("CM",60,50),S("CM",40,50),S("LM",15,53),S("ST",62,82),S("ST",38,82)],
+ "3-5-2":[S("GK",50,8),S("CB",72,21),S("CB",50,18),S("CB",28,21),S("RM",88,50),S("CM",62,46),S("CM",38,46),S("CAM",50,62),S("LM",12,50),S("ST",62,84),S("ST",38,84)],
+ "4-2-3-1":[S("GK",50,8),S("RB",85,27),S("CB",63,21),S("CB",37,21),S("LB",15,27),S("CDM",64,43),S("CDM",36,43),S("RW",82,66),S("CAM",50,64),S("LW",18,66),S("ST",50,86)]
+};
+const POOL={};Object.keys(PM).forEach(pos=>POOL[pos]=ROSTER.filter(p=>p.pos.includes(pos)));
+
+/* ===== state ===== */
+let st={mode:"solo",form:"4-3-3",diff:0,teamName:"",league:"",slots:[],sel:null,rerolls:3,candList:null,pending:null,myTeam:null,wc:null};
+
+/* ===== helpers ===== */
+const $=id=>document.getElementById(id);
+function show(id){["home","setup","draft","wc","result","league"].forEach(s=>$(s).classList.add("hidden"));$(id).classList.remove("hidden");window.scrollTo(0,0);}
+function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),1900);}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function poisson(lam,rng){if(lam<=0)return 0;let L=Math.exp(-lam),k=0,p=1;do{k++;p*=rng();}while(p>L);return k-1;}
+function goalsFor(a,b,rng){return Math.min(9,poisson(clamp(1.35+(a-b)*0.10,0.18,6),rng));}
+
+/* ===== match event engine (gerçekçilik + olay akışı) ===== */
+const SCOREW={ST:11,CF:10,RW:7,LW:7,CAM:6,RM:4,LM:4,CM:3,CDM:1.3,RB:1,LB:1,CB:.9,GK:.05};
+function pickScorer(players,rng){ // players: [{n,pos}]
+  if(!players||!players.length)return "?";
+  const w=players.map(p=>SCOREW[p.pos]||1.5);const tot=w.reduce((a,b)=>a+b,0);
+  let r=rng()*tot;for(let i=0;i<players.length;i++){r-=w[i];if(r<=0)return players[i].n;}
+  return players[players.length-1].n;
+}
+function oppScorer(opp,rng){const s=opp.stars||[];return s.length?s[Math.floor(rng()*s.length)]:opp.name;}
+function poss(a,b){return Math.round(clamp(50+(a-b)*1.4,30,70));}
+function shotsFor(goals,ovrEdge,rng){return Math.max(goals, goals+2+Math.floor((ovrEdge+8)/4)+Math.floor(rng()*4));}
+// Full simulated match with timeline. me={ovr,players}, opp={ovr,stars,name,c}
+function simMatch(me,opp,diff,rng,knockout){
+  const eOpp=opp.ovr+diff;
+  const mg=goalsFor(me.ovr,eOpp,rng), og=goalsFor(eOpp,me.ovr,rng);
+  const ev=[];
+  for(let i=0;i<mg;i++)ev.push({t:"me",min:1+Math.floor(rng()*90),sc:pickScorer(me.players,rng)});
+  for(let i=0;i<og;i++)ev.push({t:"opp",min:1+Math.floor(rng()*90),sc:oppScorer(opp,rng)});
+  ev.sort((a,b)=>a.min-b.min);
+  let m=0,o=0;ev.forEach(e=>{if(e.t==="me")e.s=(++m)+"-"+o;else e.s=m+"-"+(++o);});
+  let pens=null,win=mg>og;
+  if(knockout&&mg===og){const pw=rng()<clamp(.5+(me.ovr-opp.ovr)*.02,.2,.8);const a=4+Math.floor(rng()*2);pens=pw?a+"-"+(a-1):(a-1)+"-"+a;win=pw;}
+  const pm=poss(me.ovr,eOpp);
+  const stat={poss:[pm,100-pm],shots:[shotsFor(mg,me.ovr-eOpp,rng),shotsFor(og,eOpp-me.ovr,rng)]};
+  return {mg,og,ev,pens,win,stat};
+}
+
+/* ===== setup ===== */
+$("count").innerHTML="<b>"+TOTAL+"</b> oyuncu · <b>"+TEAMS.length+"</b> tarihî takım";
+$("formSeg").innerHTML=Object.keys(FORMS).map((f,i)=>`<button data-f="${f}" class="${i===0?'on':''}">${f}</button>`).join("");
+$("formSeg").querySelectorAll("button").forEach(b=>b.onclick=()=>{$("formSeg").querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");st.form=b.dataset.f;});
+$("diffSeg").querySelectorAll("button").forEach(b=>b.onclick=()=>{$("diffSeg").querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");st.diff=+b.dataset.d;});
+function goSetup(mode){st.mode=mode;$("setupTitle").textContent=mode==="league"?"Lig kadrosu kur":"Kadronu kur";
+  $("leagueFields").classList.toggle("hidden",mode!=="league");$("viewLeagueBtn").classList.toggle("hidden",mode!=="league");
+  $("diffLbl").textContent=mode==="league"?"Zorluk (lig için kullanılmaz)":"Turnuva zorluğu";show("setup");}
+
+/* ===== draft (free order + multi-position placement) ===== */
+function startDraft(){
+  st.teamName=$("teamName").value.trim();
+  if(st.mode==="league"){const c=$("leagueCode").value.trim().toUpperCase();if(!c||!st.teamName){toast("Takım adı ve lig kodu gir");return;}st.league=c;}
+  if(!st.teamName)st.teamName=st.mode==="league"?"":"Senin Takımın";
+  st.slots=FORMS[st.form].map(s=>({pos:s.pos,x:s.x,y:s.y,player:null,roll:null}));
+  st.sel=null;st.rerolls=3;$("rrLeft").textContent=3;st.candList=null;st.pending=null;
+  $("cands").classList.add("hidden");$("chooser").classList.add("hidden");$("rerollBtn").classList.add("hidden");
+  $("draftHead").textContent="Kadronu kur";
+  $("draftHint").textContent="Sahada boş bir mevkiye dokun — zar dönsün.";
+  renderBoard("board",true);updateProg();show("draft");
+}
+function updateProg(){$("progress").textContent=st.slots.filter(s=>s.player).length+" / "+st.slots.length;}
+
+function selectSlot(idx){
+  if(st.slots[idx].player)return;
+  st.sel=idx;st.pending=null;$("chooser").classList.add("hidden");
+  renderBoard("board",true);
+  if(st.slots[idx].roll)showCachedRoll(idx);   // mevkiye zar atılmıştı -> aynı sonucu göster (ücretsiz yeni zar YOK)
+  else rollSlot(false);                         // ilk kez geliniyor -> ilk zar (bedava)
+}
+// bir slota kilitli zar sonucundan hâlâ uygun (başka yere alınmamış) oyuncular
+function availFromRoll(roll){
+  const used=new Set(st.slots.filter(s=>s.player).map(s=>s.player.id));
+  return roll.filter(p=>!used.has(p.id));
+}
+function showCachedRoll(idx){
+  const pos=st.slots[idx].pos;
+  const cl=availFromRoll(st.slots[idx].roll);
+  if(cl.length===0){rollSlot(false);return;}    // tüm adaylar başka yere gitmişse (nadir) bedava taze zar
+  st.candList=cl;
+  $("draftHint").parentElement.classList.remove("rolling");
+  $("draftHint").textContent=`${PM[pos].lbl} — bu mevki için zarın: ${cl.length} oyuncudan birini seç:`;
+  renderCands();
+  $("rerollBtn").classList.toggle("hidden",st.rerolls<=0);
+}
+function rollSlot(isReroll){
+  if(st.sel==null)return;
+  if(isReroll){if(st.rerolls<=0){toast("Hak bitti");return;}st.rerolls--;$("rrLeft").textContent=st.rerolls;}
+  const pos=st.slots[st.sel].pos;
+  $("draftHint").innerHTML=`<span class="dice">🎲</span> ${PM[pos].lbl} için zar dönüyor...`;
+  $("draftHint").parentElement.classList.add("rolling");
+  $("cands").classList.add("hidden");$("rerollBtn").classList.add("hidden");
+  setTimeout(()=>{
+    $("draftHint").parentElement.classList.remove("rolling");
+    const used=new Set(st.slots.filter(s=>s.player).map(s=>s.player.id));
+    const elig=POOL[pos].filter(p=>!used.has(p.id));
+    st.candList=shuffle(elig).slice(0,3);
+    st.slots[st.sel].roll=st.candList;          // ZAR SONUCUNU MEVKİYE KİLİTLE
+    $("draftHint").textContent=`${PM[pos].lbl} — ${st.candList.length} oyuncudan birini seç:`;
+    renderCands();
+    $("rerollBtn").classList.toggle("hidden",st.rerolls<=0);
+  },420);
+}
+function rerollSlot(){rollSlot(true);}
+function renderCands(){
+  $("cands").innerHTML=st.candList.map((c,i)=>`
+   <div class="cand ${c.o>=90?'top':''}" onclick="pickCand(${i})">
+     <div class="ov">${c.o}</div>${flag(c.c)}
+     <div class="nm">${c.n}</div><div class="mt">${c.c} · ${c.y}</div>
+     <div class="pp">${c.pos.map(p=>PM[p].ab).join(" / ")}</div>
+   </div>`).join("");
+  $("cands").classList.remove("hidden");
+}
+function emptySlotsForPos(pos){return st.slots.map((s,i)=>({s,i})).filter(o=>!o.s.player&&o.s.pos===pos);}
+function pickCand(i){
+  const player=st.candList[i];
+  // which empty positions can this player fill?
+  const posSet=[];
+  player.pos.forEach(p=>{if(emptySlotsForPos(p).length && !posSet.includes(p))posSet.push(p);});
+  // ensure the selected slot's pos is first if eligible
+  const selPos=st.slots[st.sel].pos;
+  if(posSet.length<=1){placeIn(player, posSet[0]||selPos);return;}
+  // multiple options -> let gamer choose
+  st.pending=player;
+  $("cands").classList.add("hidden");$("rerollBtn").classList.add("hidden");
+  $("chooser").innerHTML=`<div class="q">${player.n} hangi mevkide oynasın?</div>`+
+    posSet.map(p=>`<button class="posbtn" onclick="placeIn(_pending(),'${p}')">${PM[p].lbl} <span style="opacity:.8">(${PM[p].ab})</span></button>`).join("");
+  $("chooser").classList.remove("hidden");
+}
+function _pending(){return st.pending;}
+function placeIn(player,pos){
+  // prefer selected slot if it matches pos & empty, else first empty of pos
+  let slot=null;
+  if(st.sel!=null && !st.slots[st.sel].player && st.slots[st.sel].pos===pos)slot=st.slots[st.sel];
+  if(!slot){const e=emptySlotsForPos(pos)[0];if(e)slot=e.s;}
+  if(!slot){const e=st.slots.find(s=>!s.player&&player.pos.includes(s.pos));slot=e;}
+  if(!slot){toast("Uygun boş yer yok");return;}
+  slot.player=player;
+  st.sel=null;st.candList=null;st.pending=null;
+  $("cands").classList.add("hidden");$("chooser").classList.add("hidden");$("rerollBtn").classList.add("hidden");
+  $("draftHint").textContent="Sahada boş bir mevkiye dokun — zar dönsün.";
+  renderBoard("board",true);updateProg();
+  if(st.slots.every(s=>s.player))finishDraft();
+}
+
+/* ===== board render ===== */
+function renderBoard(target,interactive){
+  const el=$(target);
+  let html=`<div class="mk mid"></div><div class="mk circle"></div><div class="mk boxT"></div><div class="mk boxB"></div>`;
+  st.slots.forEach((s,idx)=>{
+    const top=100-s.y;
+    if(s.player){const p=s.player;
+      html+=`<div class="tok" style="left:${s.x}%;top:${top}%"><div class="chip ${p.o>=90?'top':''}">
+        <div class="r1"><span class="ov">${p.o}</span>${flag(p.c)}</div>
+        <div class="nm">${p.n}</div><div class="yr">${p.c} ${p.y} · ${PM[s.pos].ab}</div></div></div>`;
+    }else{
+      const sel=interactive&&st.sel===idx;
+      const click=interactive?`onclick="selectSlot(${idx})"`:"";
+      html+=`<div class="tok ${sel?'sel':''}" style="left:${s.x}%;top:${top}%"><div class="empty" ${click}>${PM[s.pos].ab}</div></div>`;
+    }
+  });
+  el.innerHTML=html;
+}
+
+/* ===== team build ===== */
+function buildTeamObj(slots,name){
+  const ovr=Math.round(slots.reduce((a,s)=>a+s.player.o,0)/slots.length);
+  const players=slots.map(s=>({n:s.player.n,c:s.player.c,y:s.player.y,o:s.player.o,pos:s.pos}));
+  const stars=players.slice().sort((a,b)=>b.o-a.o).slice(0,3).map(p=>p.n);
+  return {name,ovr,players,stars};
+}
+function finishDraft(){
+  const nm=st.teamName||"Senin Takımın";
+  st.myTeam=buildTeamObj(st.slots,nm);
+  if(st.mode==="league"){$("resultTitle").textContent=nm;$("myOv2").textContent="OVR "+st.myTeam.ovr;renderBoard("board2",false);show("result");}
+  else startWorldCup();
+}
+
+/* ===== WORLD CUP (match-by-match) ===== */
+const KO=["Son 16","Çeyrek Final","Yarı Final","Final"];
+function pickTeams(n,ex){const s=new Set(ex);return shuffle(TEAMS.filter(t=>!s.has(teamLabel(t)))).slice(0,n);}
+function startWorldCup(){
+  const me={name:st.myTeam.name||"Senin Takımın",ovr:st.myTeam.ovr,c:null,isMe:true,stars:st.myTeam.stars,players:st.myTeam.players};
+  const others=pickTeams(3,[]);
+  st.wc={me,group:[me,...others],myMatches:[],aiResults:[],table:null,ranking:null,myRank:null,advanced:false,
+         koIndex:0,ko:[],faced:others.map(teamLabel),eliminated:false,champion:false,bestWin:null,phase:"group"};
+  renderWC();
+}
+function playGroupMatch(){
+  const w=st.wc;const opp=w.group[1+w.myMatches.length];
+  const r=simMatch(w.me,opp,st.diff,Math.random,false);
+  if(r.mg>=7&&r.og===0)w.bestWin=`${teamLabel(opp)} (${r.mg}-0)`;
+  w.myMatches.push({opp,mg:r.mg,og:r.og,ev:r.ev,stat:r.stat});
+  renderWC();                       // 3. maçta da önce sonucu göster — finalize ETME
+}
+function finishGroupStage(){        // kullanıcı "puan durumunu gör" deyince
+  finalizeGroup();renderWC();
+}
+function finalizeGroup(){
+  const w=st.wc;const rng=Math.random;
+  const tbl=w.group.map((t,i)=>({i,t,P:0,W:0,D:0,L:0,GF:0,GA:0,Pts:0}));
+  const apply=(A,B,ga,gb)=>{A.P++;B.P++;A.GF+=ga;A.GA+=gb;B.GF+=gb;B.GA+=ga;if(ga>gb){A.W++;B.L++;A.Pts+=3;}else if(gb>ga){B.W++;A.L++;B.Pts+=3;}else{A.D++;B.D++;A.Pts++;B.Pts++;}};
+  // my matches (vs group[1..3])
+  w.myMatches.forEach((m,k)=>apply(tbl[0],tbl[1+k],m.mg,m.og));
+  // ai vs ai (1-2,1-3,2-3)
+  [[1,2],[1,3],[2,3]].forEach(([a,b])=>{const eA=w.group[a].ovr+st.diff,eB=w.group[b].ovr+st.diff;apply(tbl[a],tbl[b],goalsFor(eA,eB,rng),goalsFor(eB,eA,rng));});
+  w.table=tbl;
+  w.ranking=tbl.slice().sort((x,y)=>y.Pts-x.Pts||(y.GF-y.GA)-(x.GF-x.GA)||y.GF-x.GF||y.t.ovr-x.t.ovr);
+  w.myRank=w.ranking.findIndex(r=>r.t.isMe)+1;
+  w.advanced=w.myRank<=2;w.eliminated=!w.advanced;w.phase="group_done";
+}
+function nextKO(){
+  const w=st.wc;if(w.eliminated||w.champion)return;w.phase="ko";
+  const round=KO[w.koIndex];const opp=pickTeams(1,w.faced)[0]||shuffle(TEAMS)[0];w.faced.push(teamLabel(opp));
+  const r=simMatch(w.me,opp,st.diff,Math.random,true);
+  if(r.mg>=7&&r.og===0)w.bestWin=`${teamLabel(opp)} (${r.mg}-0)`;
+  w.ko.push({round,opp,mg:r.mg,og:r.og,pens:r.pens,win:r.win,ev:r.ev,stat:r.stat});
+  if(!r.win)w.eliminated=true;else if(round==="Final")w.champion=true;else w.koIndex++;
+  renderWC();
+}
+function sideMe(name,ovr){return `<div class="side"><div class="tflag">🎲 ${name}</div><div class="tov">OVR ${ovr}</div></div>`;}
+function sideOpp(op){return `<div class="side"><div class="tflag">${flag(op.c)} ${teamLabel(op)}</div><div class="tov">OVR ${op.ovr}</div></div>`;}
+function matchCard(me,op,mg,og,pens,top,ev,stat){
+  const cls=mg>og?'w':(mg<og?'l':'d');const res=mg>og?'KAZANDIN ✓':(mg<og?'KAYBETTİN':(pens?(pens.split('-')[0]>pens.split('-')[1]?'PENALTILARDA KAZANDIN ✓':'PENALTILARDA KAYBETTİN'):'BERABERE'));
+  let feed="";
+  if(ev&&ev.length){feed=`<div class="events">`+ev.map(e=>`<div class="evrow ${e.t}"><span class="min">${e.min}'</span><span class="who">⚽ ${e.t==='me'?'🎲':flag(op.c)} ${e.sc}</span><span class="es">${e.s}</span></div>`).join("")+`</div>`;}
+  else if(mg+og===0){feed=`<div class="events"><div class="evrow d" style="justify-content:center;color:var(--muted)">Gol yok — kısır geçti</div></div>`;}
+  let statline="";
+  if(stat){statline=`<div class="statline"><span>Topla oynama <b>${stat.poss[0]}%</b> – <b>${stat.poss[1]}%</b></span><span>İsabetli şut <b>${stat.shots[0]}</b> – <b>${stat.shots[1]}</b></span></div>`;}
+  return `<div class="tcard">${top?`<div class="kick center" style="margin-bottom:10px">${top}</div>`:''}
+   <div class="matchrow">${sideMe(me.name,me.ovr)}<div class="score">${mg} – ${og}${pens?`<span class="pen">pen ${pens}</span>`:''}</div>${sideOpp(op)}</div>
+   <div class="stars">${(op.stars||[]).map(s=>`<span>${flag(op.c)} ${s}</span>`).join("")}</div>
+   ${feed}${statline}
+   <div class="rstamp ${cls}">${res}</div></div>`;
+}
+function renderWC(){
+  const w=st.wc;$("wcTeam").textContent=`${w.me.name} · OVR ${w.me.ovr}`;
+  let h="",banner="",btns="";
+  if(w.phase==="group"){
+    const played=w.myMatches.length, allDone=played===3;
+    h+=`<div class="sechead">Grup Aşaması — Maç ${played}/3</div>`;
+    w.myMatches.forEach((m,i)=>h+=matchCard(w.me,m.opp,m.mg,m.og,null,`${i+1}. Grup Maçı`,m.ev,m.stat));
+    if(allDone){
+      banner=`<div class="banner"><div class="em">📋</div><div class="big">Grup maçları tamamlandı</div><div class="note">3 maçını oynadın. Puan durumunu görüp ilk 2'ye girip giremediğini öğren.</div></div>`;
+      btns=`<button class="btn green" onclick="finishGroupStage()">▶ Grup puan durumunu gör</button><button class="btn ghost" onclick="show('home')">Çık</button>`;
+    }else{
+      const next=w.group[1+played];
+      banner=`<div class="banner"><div class="em">⚽</div><div class="big">Grup maçların</div><div class="note">Grup rakipleri: ${w.group.slice(1).map(t=>flag(t.c)+" "+teamLabel(t)).join(" · ")}</div></div>`;
+      btns=`<button class="btn green" onclick="playGroupMatch()">▶ ${played+1}. maçı oyna: ${next.name}</button><button class="btn ghost" onclick="show('home')">Çık</button>`;
+    }
+    $("wcBody").innerHTML=banner+h;$("wcBtns").innerHTML=btns;show("wc");return;
+  }
+  // group_done or ko: show table
+  h+=`<div class="sechead">Grup Puan Durumu</div><table><thead><tr><th>#</th><th class="nm">Takım</th><th>O</th><th>G</th><th>B</th><th>M</th><th>A</th><th>Y</th><th>Av</th><th>P</th></tr></thead><tbody>`;
+  w.ranking.forEach((r,i)=>{const me=r.t.isMe,adv=i<2;
+    h+=`<tr class="${me?'me':''} ${adv?'adv':''}"><td class="rk">${i+1}</td><td class="nm">${me?'🎲':flag(r.t.c)} ${me?r.t.name:teamLabel(r.t)}${me?' ⭐':''}</td><td>${r.P}</td><td>${r.W}</td><td>${r.D}</td><td>${r.L}</td><td>${r.GF}</td><td>${r.GA}</td><td>${r.GF-r.GA}</td><td class="rk">${r.Pts}</td></tr>`;});
+  h+=`</tbody></table>`;
+  h+=`<details open><summary>Grup maçların</summary>`+w.myMatches.map(m=>`<div class="fix"><span>${flag(m.opp.c)} ${teamLabel(m.opp)}</span><span class="s">${m.mg} : ${m.og}</span></div>`).join("")+`</details>`;
+  if(w.ko.length){h+=`<div class="sechead">Eleme Turları</div>`;w.ko.forEach(k=>h+=matchCard(w.me,k.opp,k.mg,k.og,k.pens,k.round,k.ev,k.stat));}
+  if(!w.advanced){
+    banner=`<div class="banner out"><div class="em">😵</div><div class="big">Grupta elendin</div><div class="note">${w.myRank}. sırada bitirdin — ilk 2'ye giremedin.</div></div>`;
+    btns=`<button class="btn green" onclick="startWorldCup()">Tekrar Oyna</button><button class="btn" onclick="show('home')">Yeni Draft</button>`;
+  }else if(w.champion){
+    banner=`<div class="banner champ">${trophySVG(w.me.name)}<div class="big">DÜNYA ŞAMPİYONU!</div><div class="note">${w.me.name} kupayı kaldırdı! 🥳${w.bestWin?` Ezici 7-0: ${w.bestWin}.`:''}</div></div>`;
+    btns=`<button class="btn green" onclick="startWorldCup()">Tekrar Oyna</button><button class="btn" onclick="show('home')">Yeni Draft</button>`;
+    celebrate();
+  }else if(w.eliminated){
+    const last=w.ko[w.ko.length-1];const em={"Final":"🥈","Yarı Final":"🥉","Çeyrek Final":"😤","Son 16":"😞"}[last.round]||"😞";
+    const msg=last.round==="Final"?"Finalde kaybettin — bir adım kaldı!":`${last.round}'de elendin.`;
+    banner=`<div class="banner out"><div class="em">${em}</div><div class="big">${last.round==="Final"?"İkinci oldun":"Turnuva bitti"}</div><div class="note">${teamLabel(last.opp)} karşısında ${msg}</div></div>`;
+    btns=`<button class="btn green" onclick="startWorldCup()">Tekrar Oyna</button><button class="btn" onclick="show('home')">Yeni Draft</button>`;
+  }else{
+    const nextName=KO[w.koIndex];
+    banner=`<div class="banner win"><div class="em">✅</div><div class="big">Grubu ${w.myRank}. geçtin</div><div class="note">Sıradaki tur: ${nextName}</div></div>`;
+    btns=`<button class="btn green" onclick="nextKO()">▶ ${nextName} oyna</button><button class="btn ghost" onclick="show('home')">Çık</button>`;
+  }
+  $("wcBody").innerHTML=banner+h;$("wcBtns").innerHTML=btns;show("wc");
+}
+function trophySVG(name){
+  const eng=(name||"CHAMPION").toUpperCase().replace(/[<>&]/g,"").slice(0,16)||"CHAMPION";
+  return `<svg class="trophy" viewBox="0 0 140 210" width="150" height="210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dünya Kupası kupası">
+   <defs>
+    <radialGradient id="globeG" cx="40%" cy="34%" r="75%"><stop offset="0" stop-color="#ffe9a8"/><stop offset="45%" stop-color="#e6b53f"/><stop offset="100%" stop-color="#9a6c12"/></radialGradient>
+    <linearGradient id="bodyG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3d98a"/><stop offset="40%" stop-color="#c89320"/><stop offset="100%" stop-color="#7d5410"/></linearGradient>
+    <linearGradient id="shineG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c4"/><stop offset="100%" stop-color="#d9a836"/></linearGradient>
+   </defs>
+   <circle cx="70" cy="50" r="33" fill="url(#globeG)" stroke="#7a5208" stroke-width="1.5"/>
+   <ellipse cx="70" cy="50" rx="33" ry="12" fill="none" stroke="#8a5f10" opacity=".55"/>
+   <ellipse cx="70" cy="50" rx="13" ry="33" fill="none" stroke="#8a5f10" opacity=".55"/>
+   <line x1="37" y1="50" x2="103" y2="50" stroke="#8a5f10" opacity=".55"/>
+   <path d="M52 28 Q70 40 88 28" fill="none" stroke="#fff3c4" stroke-width="1.4" opacity=".7"/>
+   <path d="M50 78 C36 110 44 140 58 162 L60 178 L80 178 L82 162 C96 140 104 110 90 78 C84 92 78 96 70 96 C62 96 56 92 50 78 Z" fill="url(#bodyG)" stroke="#6d4a0c" stroke-width="1.2"/>
+   <path d="M66 96 C64 120 64 150 68 176 L72 176 C76 150 76 120 74 96 Z" fill="url(#shineG)" opacity=".5"/>
+   <ellipse cx="70" cy="82" rx="22" ry="6" fill="url(#shineG)" stroke="#6d4a0c"/>
+   <rect x="44" y="178" width="52" height="9" rx="2" fill="url(#bodyG)" stroke="#6d4a0c"/>
+   <rect x="38" y="187" width="64" height="16" rx="3" fill="#222018"/>
+   <text x="70" y="198" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7.5" fill="#f3d98a" letter-spacing="1">${eng}</text>
+  </svg>`;
+}
+function celebrate(){
+  const box=$("confetti");if(!box)return;box.innerHTML="";
+  const cols=["#f4c430","#147a4a","#c0392b","#2f9159","#ffd34d","#fff"];
+  for(let i=0;i<90;i++){const d=document.createElement("div");d.className="conf";
+    d.style.left=Math.random()*100+"vw";d.style.background=cols[i%cols.length];
+    d.style.animationDuration=(2+Math.random()*2.5)+"s";d.style.animationDelay=(Math.random()*0.6)+"s";
+    d.style.transform="rotate("+Math.random()*360+"deg)";box.appendChild(d);}
+  setTimeout(()=>{box.innerHTML="";},4200);
+}
+
+/* ===== Fuci Arkadaşlar Ligi (home-away double round robin) ===== */
+const LS=(()=>{try{const k="__fwc_t";window.localStorage.setItem(k,"1");window.localStorage.removeItem(k);return window.localStorage;}catch(e){return null;}})();
+function storeMode(){
+  if(typeof window!=="undefined"&&window.storage&&typeof window.storage.get==="function")return "shared";
+  if(LS)return "local";
+  return "none";
+}
+function hasStore(){return storeMode()!=="none";}
+async function loadLeague(code){
+  const m=storeMode();
+  try{
+    if(m==="shared"){const r=await window.storage.get("fwc2:"+code,true);return r&&r.value?JSON.parse(r.value):[];}
+    if(m==="local"){const v=LS.getItem("fwc2:"+code);return v?JSON.parse(v):[];}
+  }catch(e){}
+  return [];
+}
+async function saveLeague(code,list){
+  const m=storeMode();
+  try{
+    if(m==="shared"){await window.storage.set("fwc2:"+code,JSON.stringify(list),true);return true;}
+    if(m==="local"){LS.setItem("fwc2:"+code,JSON.stringify(list));return true;}
+  }catch(e){}
+  return false;
+}
+async function submitToLeague(){
+  if(!hasStore()){toast("Bu ortamda kayıt yapılamıyor");return;}
+  const t=st.myTeam;if(!t||!t.name){toast("Takım adı gerekli");return;}
+  const team={id:Math.random().toString(36).slice(2,9),name:t.name,ovr:t.ovr,form:st.form,seed:Math.random().toString(36).slice(2,10),players:t.players,ts:Date.now()};
+  let list=await loadLeague(st.league);list=list.filter(x=>x.name.toLowerCase()!==t.name.toLowerCase());list.push(team);
+  const ok=await saveLeague(st.league,list);
+  toast(ok?(storeMode()==="shared"?"Lige eklendi ✓ (paylaşımlı)":"Lige eklendi ✓ (bu cihazda)"):"Kaydedilemedi");
+  if(ok)openLeague();
+}
+function buildInviteMsg(code){
+  return `🏆 Fuci Arkadaşlar Ligi'ne katıl!\n`+
+    `Lig kodu: ${code}\n\n`+
+    `Nasıl katılırsın:\n`+
+    `1) Sana gönderdiğim uygulama linkini aç.\n`+
+    `2) "Fuci Arkadaşlar Ligi"ne gir, lig kodu olarak ${code} yaz.\n`+
+    `3) Kadronu kur ve "★ Lige Kaydet"e bas.\n`+
+    `Aynı kodu giren herkes aynı puan tablosunda yarışır. Görüşürüz! ⚽`;
+}
+async function inviteFriends(){
+  if(st.mode==="league"&&!st.league){const c=$("leagueCode")&&$("leagueCode").value.trim().toUpperCase();if(c)st.league=c;}
+  const code=st.league;
+  if(!code){toast("Önce lig kodu gir");goSetup("league");return;}
+  const msg=buildInviteMsg(code);
+  const box=$("inviteBox");
+  box.innerHTML=`<div class="invite">
+    <div class="ihead">Daveti paylaş</div>
+    <p class="note">Önce bu uygulamayı <b>Claude'daki "Paylaş" (Share) butonuyla</b> arkadaşına gönder — sonra aşağıdaki metni de yolla. Aynı linki açıp aynı kodu (<b>${code}</b>) girenler senin tablonda görünür.</p>
+    <textarea class="invtext" readonly rows="8">${msg.replace(/</g,"&lt;")}</textarea>
+    <div class="row" style="margin-top:8px">
+      <button class="btn green sm" onclick="copyInvite()">⧉ Metni Kopyala</button>
+      <button class="btn ghost sm" onclick="$('inviteBox').classList.add('hidden')">Kapat</button>
+    </div>
+  </div>`;
+  box.classList.remove("hidden");box.scrollIntoView({behavior:"smooth",block:"center"});
+  try{await navigator.clipboard.writeText(msg);toast("Davet metni kopyalandı ✓");}catch(e){toast("Metni elle seçip kopyala");}
+}
+async function copyInvite(){
+  const ta=document.querySelector("#inviteBox .invtext");if(!ta)return;
+  ta.select();
+  try{await navigator.clipboard.writeText(ta.value);toast("Kopyalandı ✓");}
+  catch(e){try{document.execCommand("copy");toast("Kopyalandı ✓");}catch(_){toast("Elle kopyala");}}
+}
+async function openLeague(){
+  if(st.mode==="league"&&!st.league){const c=$("leagueCode").value.trim().toUpperCase();if(c)st.league=c;const tn=$("teamName").value.trim();if(tn)st.teamName=tn;}
+  if(!st.league){toast("Önce lig kodu gir");goSetup("league");return;}
+  show("league");await refreshLeague();
+}
+async function refreshLeague(){
+  const mode=storeMode();
+  const badge=mode==="shared"?" · 🌐 paylaşımlı":mode==="local"?" · 💾 bu cihaz":"";
+  $("leagueTitle").textContent="Fuci Arkadaşlar Ligi · "+st.league;$("fixturesWrap").innerHTML="";
+  if(mode==="none"){$("standings").innerHTML="";$("leagueMeta").textContent="—";$("leagueNote").textContent="Bu ortamda hiç kayıt yapılamıyor. Uygulamayı claude.ai içinde canlı bir artifact olarak açtığında lig çalışır.";return;}
+  const list=await loadLeague(st.league);$("leagueMeta").textContent=list.length+" takım"+badge;
+  if(list.length===0){$("standings").innerHTML="<p class='note'>Henüz takım yok. İlk gönderen sen ol.</p>";$("leagueNote").textContent="";return;}
+  if(list.length===1){$("standings").innerHTML=`<table><thead><tr><th>#</th><th class="nm">Takım</th><th>OVR</th></tr></thead><tbody><tr class="me"><td class="rk">1</td><td class="nm">${list[0].name} ⭐</td><td>${list[0].ovr}</td></tr></tbody></table>`;$("leagueNote").textContent="Tablo için en az 2 takım lazım.";return;}
+  const {table,fixtures}=computeLeague(list);
+  $("standings").innerHTML=renderTable(table);
+  $("fixturesWrap").innerHTML=`<details><summary>Maç sonuçları (${fixtures.length})</summary>`+fixtures.map(f=>`<div class="fix"><span>${f.a} – ${f.b}</span><span class="s">${f.ga} : ${f.gb}</span></div>`).join("")+`</details>`;
+  $("leagueNote").textContent=(mode==="shared"
+    ?"Çift devreli lig (rövanşlı): herkes herkesle 2'şer maç. Skorlar sabit tohumlu (herkeste aynı). 🌐 Veri paylaşımlı: aynı linki açıp aynı kodu giren arkadaşların da tabloda görünür."
+    :"Çift devreli lig (rövanşlı): herkes herkesle 2'şer maç. 💾 Şu an YEREL moddasın — kayıtlar sadece bu cihazda/tarayıcıda tutulur, arkadaşların göremez. Paylaşımlı oynamak için uygulamayı claude.ai içinde canlı artifact olarak aç.");
+}
+function computeLeague(list){
+  const M={},fixtures=[];
+  list.forEach(t=>M[t.id]={name:t.name,ovr:t.ovr,P:0,W:0,D:0,L:0,GF:0,GA:0,Pts:0,me:st.teamName&&t.name.toLowerCase()===st.teamName.toLowerCase()});
+  const play=(A,B,leg)=>{const rng=mulberry32(hashStr("fwc2|"+st.league+"|"+A.seed+"|"+B.seed+"|"+leg));
+    const ga=Math.min(7,goalsFor(A.ovr,B.ovr,rng)),gb=Math.min(7,goalsFor(B.ovr,A.ovr,rng));
+    const a=M[A.id],b=M[B.id];a.P++;b.P++;a.GF+=ga;a.GA+=gb;b.GF+=gb;b.GA+=ga;
+    if(ga>gb){a.W++;b.L++;a.Pts+=3;}else if(gb>ga){b.W++;a.L++;b.Pts+=3;}else{a.D++;b.D++;a.Pts++;b.Pts++;}
+    fixtures.push({a:A.name,b:B.name,ga,gb});};
+  for(let i=0;i<list.length;i++)for(let j=0;j<list.length;j++){if(i===j)continue;play(list[i],list[j],"H");}
+  return {table:Object.values(M).sort((x,y)=>y.Pts-x.Pts||(y.GF-y.GA)-(x.GF-x.GA)||y.GF-x.GF||y.ovr-x.ovr),fixtures};
+}
+function renderTable(rows){
+  return `<table><thead><tr><th>#</th><th class="nm">Takım</th><th>O</th><th>G</th><th>B</th><th>M</th><th>A</th><th>Y</th><th>Av</th><th>P</th></tr></thead><tbody>`+
+  rows.map((r,i)=>`<tr class="${r.me?'me':''}"><td class="rk">${i+1}</td><td class="nm">${r.name}${r.me?' ⭐':''}</td><td>${r.P}</td><td>${r.W}</td><td>${r.D}</td><td>${r.L}</td><td>${r.GF}</td><td>${r.GA}</td><td>${r.GF-r.GA}</td><td class="rk">${r.Pts}</td></tr>`).join("")+`</tbody></table>`;
+}
+</script>
+</body>
+</html>
